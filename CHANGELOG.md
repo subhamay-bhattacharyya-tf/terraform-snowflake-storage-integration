@@ -1,7 +1,12 @@
 ## [unreleased]
 
+### 💼 Other
+
+- *(ci)* Add missing conventional-changelog plugin to semantic-release"
+
 ### 📚 Documentation
 
+- Update CHANGELOG.md [skip ci]
 - Update CHANGELOG.md [skip ci]
 - Update CHANGELOG.md [skip ci]
 - Update CHANGELOG.md [skip ci]
