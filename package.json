@@ -1,7 +1,7 @@
 {
     "name": "terraform-snowflake-storage-integration",
     "version": "0.0.0",
-    "description": "Terraform module for creating and managing Snowflake warehouses with Semantic Release support.",
+    "description": "Terraform module for creating and managing Snowflake storage integration with Semantic Release support.",
     "license": "MIT",
     "scripts": {
         "release": "semantic-release"
@@ -25,7 +25,7 @@
     "keywords": [
         "terraform",
         "snowflake",
-        "warehouse",
+        "storage-integration",
         "infrastructure-as-code"
     ],
     "bugs": {

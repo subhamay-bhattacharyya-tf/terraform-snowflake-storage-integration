@@ -1,10 +1,10 @@
 variable "storage_integration_configs" {
-  description = "Map of configuration objects for Snowflake storage integrations"
+  description = "Map of configuration objects for Snowflake storage integrations (external stages)"
   type = map(object({
     name                      = string
     enabled                   = optional(bool, true)
     storage_provider          = optional(string, "S3")
-    storage_aws_role_arn      = string
+    storage_aws_role_arn      = optional(string, null)
     storage_allowed_locations = list(string)
     storage_blocked_locations = optional(list(string), [])
     comment                   = optional(string, null)
@@ -27,7 +27,10 @@ variable "storage_integration_configs" {
   }
 
   validation {
-    condition     = alltrue([for k, si in var.storage_integration_configs : can(regex("^arn:aws:iam::", si.storage_aws_role_arn))])
-    error_message = "storage_aws_role_arn must be a valid AWS IAM role ARN."
+    condition = alltrue([
+      for k, si in var.storage_integration_configs :
+      si.storage_provider != "S3" || (si.storage_aws_role_arn != null && can(regex("^arn:aws:iam::", si.storage_aws_role_arn)))
+    ])
+    error_message = "storage_aws_role_arn must be a valid AWS IAM role ARN when storage_provider is S3."
   }
 }

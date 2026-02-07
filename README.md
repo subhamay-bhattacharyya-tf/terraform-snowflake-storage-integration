@@ -2,7 +2,7 @@
 
 ![Release](https://github.com/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration/actions/workflows/ci.yaml/badge.svg)&nbsp;![Snowflake](https://img.shields.io/badge/Snowflake-29B5E8?logo=snowflake&logoColor=white)&nbsp;![Commit Activity](https://img.shields.io/github/commit-activity/t/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration)&nbsp;![Last Commit](https://img.shields.io/github/last-commit/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration)&nbsp;![Release Date](https://img.shields.io/github/release-date/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration)&nbsp;![Repo Size](https://img.shields.io/github/repo-size/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration)&nbsp;![File Count](https://img.shields.io/github/directory-file-count/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration)&nbsp;![Issues](https://img.shields.io/github/issues/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration)&nbsp;![Top Language](https://img.shields.io/github/languages/top/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration)&nbsp;![Custom Endpoint](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/bsubhamay/cc141ddcec28756e7f9071c265ce1a73/raw/terraform-snowflake-storage-integration.json?)
 
-A Terraform module for creating and managing Snowflake storage integrations using a map of configuration objects. Supports creating single or multiple storage integrations for AWS S3 with a single module call.
+A Terraform module for creating and managing Snowflake storage integrations using a map of configuration objects. Supports creating single or multiple storage integrations for AWS S3, GCS, and Azure with a single module call.
 
 ## Features
 
@@ -108,9 +108,9 @@ module "storage_integrations" {
 | name | string | - | Storage integration identifier (required) |
 | enabled | bool | true | Whether the integration is enabled |
 | storage_provider | string | "S3" | Cloud storage provider (S3, GCS, AZURE) |
-| storage_aws_role_arn | string | - | AWS IAM role ARN for S3 access (required) |
-| storage_allowed_locations | list(string) | - | List of allowed S3 bucket paths (required) |
-| storage_blocked_locations | list(string) | [] | List of blocked S3 bucket paths |
+| storage_aws_role_arn | string | null | AWS IAM role ARN for S3 access (required for S3) |
+| storage_allowed_locations | list(string) | - | List of allowed bucket paths (required) |
+| storage_blocked_locations | list(string) | [] | List of blocked bucket paths |
 | comment | string | null | Description of the storage integration |
 
 ### Valid Storage Providers
@@ -172,7 +172,7 @@ The module validates inputs and provides descriptive error messages for:
 - Empty storage integration name
 - Invalid storage provider
 - Empty storage_allowed_locations
-- Invalid AWS IAM role ARN format
+- Invalid AWS IAM role ARN format (when using S3)
 
 ## Testing
 
