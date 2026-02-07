@@ -1,9 +1,5 @@
 ## [unreleased]
 
-### 🐛 Bug Fixes
-
-- *(ci)* Resolve semantic-release missing plugin error
-
 ### 💼 Other
 
 - *(ci)* Add missing conventional-changelog plugin to semantic-release"
