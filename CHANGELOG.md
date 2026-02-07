@@ -1,3 +1,13 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## 1.0.0 (2026-02-07)
+
+### Bug Fixes
+
+* **ci:** resolve semantic-release missing plugin error ([cc82a35](https://github.com/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration/commit/cc82a35d477f0634ce606e64ad6b6057354520f0))
+
 ## [unreleased]
 
 ### 💼 Other
