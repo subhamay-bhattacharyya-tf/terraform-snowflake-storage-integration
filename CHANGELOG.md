@@ -1,5 +1,13 @@
 ## [unreleased]
 
+### 📚 Documentation
+
+- Update CHANGELOG.md [skip ci]
+
+### 🎨 Styling
+
+- Align Snowflake provider configuration and enable preview features
+
 ### ⚙️ Miscellaneous Tasks
 
 - Implement snowflake storage integration module
