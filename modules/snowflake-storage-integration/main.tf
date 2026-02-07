@@ -1,6 +1,7 @@
 # Snowflake Storage Integration Resource
 # Creates and manages one or more Snowflake storage integrations for AWS S3
 
+
 resource "snowflake_storage_integration" "this" {
   for_each = var.storage_integration_configs
 

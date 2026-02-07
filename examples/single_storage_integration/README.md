@@ -1,26 +1,22 @@
-# Basic Example - Single Warehouse
+# Single Storage Integration Example
 
-This example demonstrates how to create a single Snowflake warehouse using the module.
+This example demonstrates how to create a single Snowflake storage integration for AWS S3 using the module.
 
 ## Usage
 
 ```hcl
-module "warehouse" {
-  source = "../../modules/snowflake-warehouse"
+module "storage_integration" {
+  source = "../../modules/snowflake-storage-integration"
 
-  warehouse_configs = {
-    "my_warehouse" = {
-      name                      = "MY_WAREHOUSE"
-      warehouse_size            = "X-SMALL"
-      warehouse_type            = "STANDARD"
-      auto_resume               = true
-      auto_suspend              = 60
-      initially_suspended       = true
-      min_cluster_count         = 1
-      max_cluster_count         = 1
-      scaling_policy            = "STANDARD"
-      enable_query_acceleration = false
-      comment                   = "My test warehouse"
+  storage_integration_configs = {
+    "my_integration" = {
+      name                      = "MY_S3_INTEGRATION"
+      enabled                   = true
+      storage_provider          = "S3"
+      storage_aws_role_arn      = "arn:aws:iam::123456789012:role/snowflake-role"
+      storage_allowed_locations = ["s3://my-bucket/data/"]
+      storage_blocked_locations = []
+      comment                   = "My S3 storage integration"
     }
   }
 }
@@ -30,13 +26,37 @@ module "warehouse" {
 
 | Name | Description | Type | Required |
 |------|-------------|------|----------|
-| warehouse_configs | Map of warehouse configuration objects | map(object) | yes |
+| storage_integration_configs | Map of storage integration configuration objects | map(object) | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| warehouse_names | The names of the created warehouses |
-| warehouse_fully_qualified_names | The fully qualified names of the warehouses |
-| warehouse_sizes | The sizes of the warehouses |
-| warehouse_states | The states of the warehouses |
+| storage_integration_names | The names of the created storage integrations |
+| storage_integration_aws_iam_user_arns | The AWS IAM user ARNs for the storage integrations |
+| storage_integration_aws_external_ids | The AWS external IDs for the storage integrations |
+| storage_integrations | All storage integration resources |
+
+## AWS IAM Configuration
+
+After applying this example, use the output values to configure your AWS IAM role trust policy:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "<storage_integration_aws_iam_user_arns output>"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "StringEquals": {
+          "sts:ExternalId": "<storage_integration_aws_external_ids output>"
+        }
+      }
+    }
+  ]
+}
+```
