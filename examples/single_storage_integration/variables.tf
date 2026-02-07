@@ -1,16 +1,12 @@
-variable "warehouse_configs" {
-  description = "Map of configuration objects for Snowflake warehouses"
+variable "storage_integration_configs" {
+  description = "Map of configuration objects for Snowflake storage integrations"
   type = map(object({
     name                      = string
-    warehouse_size            = optional(string, "X-SMALL")
-    warehouse_type            = optional(string, "STANDARD")
-    auto_resume               = optional(bool, true)
-    auto_suspend              = optional(number, 60)
-    initially_suspended       = optional(bool, true)
-    min_cluster_count         = optional(number, 1)
-    max_cluster_count         = optional(number, 1)
-    scaling_policy            = optional(string, "STANDARD")
-    enable_query_acceleration = optional(bool, false)
+    enabled                   = optional(bool, true)
+    storage_provider          = optional(string, "S3")
+    storage_aws_role_arn      = string
+    storage_allowed_locations = list(string)
+    storage_blocked_locations = optional(list(string), [])
     comment                   = optional(string, null)
   }))
   default = {}

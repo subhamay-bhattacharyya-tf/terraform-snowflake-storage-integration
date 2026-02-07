@@ -15,10 +15,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type WarehouseProps struct {
-	Name    string
-	Size    string
-	Comment string
+type StorageIntegrationProps struct {
+	Name                 string
+	Type                 string
+	Enabled              string
+	StorageProvider      string
+	StorageAwsIamUserArn string
+	StorageAwsExternalId string
+	Comment              string
 }
 
 func openSnowflake(t *testing.T) *sql.DB {
@@ -71,10 +75,10 @@ func openSnowflake(t *testing.T) *sql.DB {
 	return db
 }
 
-func warehouseExists(t *testing.T, db *sql.DB, warehouseName string) bool {
+func storageIntegrationExists(t *testing.T, db *sql.DB, integrationName string) bool {
 	t.Helper()
 
-	q := fmt.Sprintf("SHOW WAREHOUSES LIKE '%s';", escapeLike(warehouseName))
+	q := fmt.Sprintf("SHOW STORAGE INTEGRATIONS LIKE '%s';", escapeLike(integrationName))
 	rows, err := db.Query(q)
 	require.NoError(t, err)
 	defer func() { _ = rows.Close() }()
@@ -82,13 +86,10 @@ func warehouseExists(t *testing.T, db *sql.DB, warehouseName string) bool {
 	return rows.Next()
 }
 
-func fetchWarehouseProps(t *testing.T, db *sql.DB, warehouseName string) WarehouseProps {
+func fetchStorageIntegrationProps(t *testing.T, db *sql.DB, integrationName string) StorageIntegrationProps {
 	t.Helper()
 
-	// SHOW WAREHOUSES returns columns in a specific order. We need to scan all columns
-	// to get name (col 0), size (col 3), and comment (col 10 in newer versions).
-	// Using a simpler approach: query rows and scan by column name using rows.Columns()
-	q := fmt.Sprintf("SHOW WAREHOUSES LIKE '%s';", escapeLike(warehouseName))
+	q := fmt.Sprintf("SHOW STORAGE INTEGRATIONS LIKE '%s';", escapeLike(integrationName))
 	rows, err := db.Query(q)
 	require.NoError(t, err)
 	defer func() { _ = rows.Close() }()
@@ -96,23 +97,26 @@ func fetchWarehouseProps(t *testing.T, db *sql.DB, warehouseName string) Warehou
 	cols, err := rows.Columns()
 	require.NoError(t, err)
 
-	// Find column indices for name, size, comment
-	nameIdx, sizeIdx, commentIdx := -1, -1, -1
+	// Find column indices
+	nameIdx, typeIdx, enabledIdx, commentIdx := -1, -1, -1, -1
 	for i, col := range cols {
 		switch col {
 		case "name":
 			nameIdx = i
-		case "size":
-			sizeIdx = i
+		case "type":
+			typeIdx = i
+		case "enabled":
+			enabledIdx = i
 		case "comment":
 			commentIdx = i
 		}
 	}
-	require.NotEqual(t, -1, nameIdx, "name column not found in SHOW WAREHOUSES output")
-	require.NotEqual(t, -1, sizeIdx, "size column not found in SHOW WAREHOUSES output")
-	require.NotEqual(t, -1, commentIdx, "comment column not found in SHOW WAREHOUSES output")
+	require.NotEqual(t, -1, nameIdx, "name column not found in SHOW STORAGE INTEGRATIONS output")
+	require.NotEqual(t, -1, typeIdx, "type column not found in SHOW STORAGE INTEGRATIONS output")
+	require.NotEqual(t, -1, enabledIdx, "enabled column not found in SHOW STORAGE INTEGRATIONS output")
+	require.NotEqual(t, -1, commentIdx, "comment column not found in SHOW STORAGE INTEGRATIONS output")
 
-	require.True(t, rows.Next(), "No warehouse found matching %s", warehouseName)
+	require.True(t, rows.Next(), "No storage integration found matching %s", integrationName)
 
 	// Create slice to hold all column values
 	values := make([]interface{}, len(cols))
@@ -138,11 +142,35 @@ func fetchWarehouseProps(t *testing.T, db *sql.DB, warehouseName string) Warehou
 		return fmt.Sprintf("%v", v)
 	}
 
-	return WarehouseProps{
+	props := StorageIntegrationProps{
 		Name:    getName(values[nameIdx]),
-		Size:    getName(values[sizeIdx]),
+		Type:    getName(values[typeIdx]),
+		Enabled: getName(values[enabledIdx]),
 		Comment: getName(values[commentIdx]),
 	}
+
+	// Get additional properties from DESCRIBE
+	descQ := fmt.Sprintf("DESCRIBE STORAGE INTEGRATION %s;", integrationName)
+	descRows, err := db.Query(descQ)
+	require.NoError(t, err)
+	defer func() { _ = descRows.Close() }()
+
+	for descRows.Next() {
+		var property, propertyType, propertyValue, propertyDefault string
+		err = descRows.Scan(&property, &propertyType, &propertyValue, &propertyDefault)
+		require.NoError(t, err)
+
+		switch property {
+		case "STORAGE_PROVIDER":
+			props.StorageProvider = propertyValue
+		case "STORAGE_AWS_IAM_USER_ARN":
+			props.StorageAwsIamUserArn = propertyValue
+		case "STORAGE_AWS_EXTERNAL_ID":
+			props.StorageAwsExternalId = propertyValue
+		}
+	}
+
+	return props
 }
 
 func mustEnv(t *testing.T, key string) string {
