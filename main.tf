@@ -41,7 +41,6 @@ resource "snowflake_storage_integration_gcs" "this" {
   for_each = local.gcs_integrations
 
   name                      = each.value.name
-  storage_provider          = "GCS"
   enabled                   = each.value.enabled
   storage_allowed_locations = each.value.storage_allowed_locations
   storage_blocked_locations = each.value.storage_blocked_locations
@@ -53,7 +52,6 @@ resource "snowflake_storage_integration_azure" "this" {
   for_each = local.azure_integrations
 
   name                      = each.value.name
-  storage_provider          = "AZURE"
   enabled                   = each.value.enabled
   azure_tenant_id           = each.value.azure_tenant_id
   storage_allowed_locations = each.value.storage_allowed_locations
