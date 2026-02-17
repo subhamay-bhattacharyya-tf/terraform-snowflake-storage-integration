@@ -1,14 +1,13 @@
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-## 1.0.0 (2026-02-07)
-
-### Bug Fixes
-
-* **ci:** resolve semantic-release missing plugin error ([cc82a35](https://github.com/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration/commit/cc82a35d477f0634ce606e64ad6b6057354520f0))
-
 ## [unreleased]
+
+### 🚀 Features
+
+- Restructure to single-module repository layout
+## [1.0.0] - 2026-02-07
+
+### 🐛 Bug Fixes
+
+- *(ci)* Resolve semantic-release missing plugin error
 
 ### 💼 Other
 
@@ -16,6 +15,8 @@ All notable changes to this project will be documented in this file.
 
 ### 📚 Documentation
 
+- Update CHANGELOG.md [skip ci]
+- Update CHANGELOG.md [skip ci]
 - Update CHANGELOG.md [skip ci]
 - Update CHANGELOG.md [skip ci]
 - Update CHANGELOG.md [skip ci]
@@ -34,3 +35,4 @@ All notable changes to this project will be documented in this file.
 - Update Snowflake CI pipeline and storage integration module
 - Downgrade semantic-release-action and update snowflake storage integration
 - *(release)* Trigger initial release
+- *(release)* Version 1.0.0 [skip ci]
