@@ -123,18 +123,26 @@ module "azure_storage_integration" {
 | Name | Description |
 |------|-------------|
 | storage_integration_names | Map of storage integration names keyed by identifier |
-| storage_integration_aws_iam_user_arns | Map of AWS IAM user ARNs created by Snowflake (AWS only) |
-| storage_integration_aws_external_ids | Map of AWS external IDs for trust policy configuration (AWS only) |
-| storage_integration_gcs_service_accounts | Map of GCS service accounts (GCS only) |
-| storage_integration_azure_consent_urls | Map of Azure consent URLs (Azure only) |
-| storage_integration_azure_app_ids | Map of Azure multi-tenant app IDs (Azure only) |
-| aws_storage_integrations | All AWS storage integration resources |
+| aws_storage_integrations | All AWS storage integration resources (access describe_output for IAM user ARN and external ID) |
 | gcs_storage_integrations | All GCS storage integration resources |
 | azure_storage_integrations | All Azure storage integration resources |
 
 ## AWS IAM Configuration
 
-After creating a storage integration, configure the AWS IAM role trust policy using the outputs:
+After creating a storage integration, access the AWS IAM user ARN and external ID from the `aws_storage_integrations` output:
+
+```hcl
+# Access IAM user ARN and external ID from the resource
+output "snowflake_iam_user_arn" {
+  value = module.storage_integration.aws_storage_integrations["my_integration"].describe_output[0].storage_aws_iam_user_arn[0].value
+}
+
+output "snowflake_external_id" {
+  value = module.storage_integration.aws_storage_integrations["my_integration"].describe_output[0].storage_aws_external_id[0].value
+}
+```
+
+Configure the AWS IAM role trust policy:
 
 ```json
 {
