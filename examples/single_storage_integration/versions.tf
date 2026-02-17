@@ -1,10 +1,17 @@
+# -----------------------------------------------------------------------------
+# Terraform Snowflake Storage Integration - Single Integration Example
+# -----------------------------------------------------------------------------
+# Terraform and provider version constraints for the single storage
+# integration example.
+# -----------------------------------------------------------------------------
+
 terraform {
   required_version = ">= 1.3.0"
 
   required_providers {
     snowflake = {
-      source  = "Snowflake-Labs/snowflake"
-      version = ">= 0.87.0"
+      source  = "snowflakedb/snowflake"
+      version = ">= 1.0.0"
     }
   }
 }
@@ -24,5 +31,5 @@ provider "snowflake" {
   role                     = var.snowflake_role
   authenticator            = "SNOWFLAKE_JWT"
   private_key              = var.snowflake_private_key
-  preview_features_enabled = ["snowflake_storage_integration_resource"]
+  preview_features_enabled = ["snowflake_storage_integration_aws_resource"]
 }

@@ -1,4 +1,9 @@
-// File: test/multiple_storage_integrations_test.go
+// -----------------------------------------------------------------------------
+// Terraform Snowflake Storage Integration Module - Multiple Integrations Test
+// -----------------------------------------------------------------------------
+// Tests creating multiple storage integrations via the module.
+// -----------------------------------------------------------------------------
+
 package test
 
 import (

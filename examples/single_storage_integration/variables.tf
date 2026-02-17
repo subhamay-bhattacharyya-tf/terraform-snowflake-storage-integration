@@ -1,3 +1,9 @@
+# -----------------------------------------------------------------------------
+# Terraform Snowflake Storage Integration - Single Integration Example
+# -----------------------------------------------------------------------------
+# Input variables for the single storage integration example.
+# -----------------------------------------------------------------------------
+
 variable "storage_integration_configs" {
   description = "Map of configuration objects for Snowflake storage integrations"
   type = map(object({

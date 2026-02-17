@@ -6,7 +6,7 @@ This example demonstrates how to create multiple Snowflake storage integrations 
 
 ```hcl
 module "storage_integrations" {
-  source = "../../modules/snowflake-storage-integration"
+  source = "../.."
 
   storage_integration_configs = {
     "raw_data_integration" = {

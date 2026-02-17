@@ -1,3 +1,9 @@
+# -----------------------------------------------------------------------------
+# Terraform Snowflake Storage Integration Module - Variables
+# -----------------------------------------------------------------------------
+# Input variables for the Snowflake storage integration module.
+# -----------------------------------------------------------------------------
+
 variable "storage_integration_configs" {
   description = "Map of configuration objects for Snowflake storage integrations (external stages)"
   type = map(object({
@@ -5,6 +11,7 @@ variable "storage_integration_configs" {
     enabled                   = optional(bool, true)
     storage_provider          = optional(string, "S3")
     storage_aws_role_arn      = optional(string, null)
+    azure_tenant_id           = optional(string, null)
     storage_allowed_locations = list(string)
     storage_blocked_locations = optional(list(string), [])
     comment                   = optional(string, null)
@@ -29,8 +36,16 @@ variable "storage_integration_configs" {
   validation {
     condition = alltrue([
       for k, si in var.storage_integration_configs :
-      si.storage_provider != "S3" || (si.storage_aws_role_arn != null && can(regex("^arn:aws:iam::", si.storage_aws_role_arn)))
+      upper(si.storage_provider) != "S3" || (si.storage_aws_role_arn != null && can(regex("^arn:aws:iam::", si.storage_aws_role_arn)))
     ])
     error_message = "storage_aws_role_arn must be a valid AWS IAM role ARN when storage_provider is S3."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, si in var.storage_integration_configs :
+      upper(si.storage_provider) != "AZURE" || (si.azure_tenant_id != null && si.azure_tenant_id != "")
+    ])
+    error_message = "azure_tenant_id is required when storage_provider is AZURE."
   }
 }

@@ -1,4 +1,4 @@
-# Terraform Snowflake Module - Storage Integration
+# Terraform Snowflake Storage Integration
 
 ![Release](https://github.com/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration/actions/workflows/ci.yaml/badge.svg)&nbsp;![Snowflake](https://img.shields.io/badge/Snowflake-29B5E8?logo=snowflake&logoColor=white)&nbsp;![Commit Activity](https://img.shields.io/github/commit-activity/t/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration)&nbsp;![Last Commit](https://img.shields.io/github/last-commit/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration)&nbsp;![Release Date](https://img.shields.io/github/release-date/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration)&nbsp;![Repo Size](https://img.shields.io/github/repo-size/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration)&nbsp;![File Count](https://img.shields.io/github/directory-file-count/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration)&nbsp;![Issues](https://img.shields.io/github/issues/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration)&nbsp;![Top Language](https://img.shields.io/github/languages/top/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration)&nbsp;![Custom Endpoint](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/bsubhamay/cc141ddcec28756e7f9071c265ce1a73/raw/terraform-snowflake-storage-integration.json?)
 
@@ -7,19 +7,19 @@ A Terraform module for creating and managing Snowflake storage integrations usin
 ## Features
 
 - Map-based configuration for creating single or multiple storage integrations
+- Provider-specific resources for AWS S3, GCS, and Azure
 - Built-in input validation with descriptive error messages
 - Sensible defaults for optional properties
 - Outputs keyed by integration identifier for easy reference
-- Support for AWS S3, GCS, and Azure storage providers
 - Configurable allowed and blocked storage locations
 
 ## Usage
 
-### Single Storage Integration
+### Single Storage Integration (AWS S3)
 
 ```hcl
 module "storage_integration" {
-  source = "path/to/modules/snowflake-storage-integration"
+  source = "github.com/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration"
 
   storage_integration_configs = {
     "my_integration" = {
@@ -38,15 +38,16 @@ module "storage_integration" {
 ### Multiple Storage Integrations
 
 ```hcl
-locals {
-  storage_integrations = {
+module "storage_integrations" {
+  source = "github.com/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration"
+
+  storage_integration_configs = {
     "raw_data_integration" = {
       name                      = "SN_RAW_DATA_INTEGRATION"
       enabled                   = true
       storage_provider          = "S3"
       storage_aws_role_arn      = "arn:aws:iam::123456789012:role/snowflake-raw-role"
       storage_allowed_locations = ["s3://my-bucket/raw/"]
-      storage_blocked_locations = []
       comment                   = "Storage integration for raw data ingestion"
     }
     "processed_data_integration" = {
@@ -55,45 +56,48 @@ locals {
       storage_provider          = "S3"
       storage_aws_role_arn      = "arn:aws:iam::123456789012:role/snowflake-processed-role"
       storage_allowed_locations = ["s3://my-bucket/processed/"]
-      storage_blocked_locations = []
       comment                   = "Storage integration for processed data"
-    }
-    "archive_integration" = {
-      name                      = "SN_ARCHIVE_INTEGRATION"
-      enabled                   = true
-      storage_provider          = "S3"
-      storage_aws_role_arn      = "arn:aws:iam::123456789012:role/snowflake-archive-role"
-      storage_allowed_locations = ["s3://my-bucket/archive/"]
-      storage_blocked_locations = ["s3://my-bucket/archive/restricted/"]
-      comment                   = "Storage integration for archived data"
     }
   }
 }
+```
 
-module "storage_integrations" {
-  source = "path/to/modules/snowflake-storage-integration"
+### Azure Storage Integration
 
-  storage_integration_configs = local.storage_integrations
+```hcl
+module "azure_storage_integration" {
+  source = "github.com/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration"
+
+  storage_integration_configs = {
+    "azure_integration" = {
+      name                      = "MY_AZURE_INTEGRATION"
+      enabled                   = true
+      storage_provider          = "AZURE"
+      azure_tenant_id           = "your-azure-tenant-id"
+      storage_allowed_locations = ["azure://myaccount.blob.core.windows.net/mycontainer/"]
+      comment                   = "Azure Blob storage integration"
+    }
+  }
 }
 ```
 
 ## Examples
 
-- [Single Storage Integration](examples/single_storage_integration) - Create a single storage integration
-- [Multiple Storage Integrations](examples/multiple_storage_integrations) - Create multiple storage integrations
+- [Single Storage Integration](examples/single_storage_integration) - Create a single AWS S3 storage integration
+- [Multiple Storage Integrations](examples/multiple_storage_integrations) - Create multiple AWS S3 storage integrations
 
 ## Requirements
 
 | Name | Version |
 |------|---------|
 | terraform | >= 1.3.0 |
-| snowflake | >= 0.87.0 |
+| snowflake | >= 1.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| snowflake | >= 0.87.0 |
+| snowflake | >= 1.0.0 |
 
 ## Inputs
 
@@ -109,41 +113,36 @@ module "storage_integrations" {
 | enabled | bool | true | Whether the integration is enabled |
 | storage_provider | string | "S3" | Cloud storage provider (S3, GCS, AZURE) |
 | storage_aws_role_arn | string | null | AWS IAM role ARN for S3 access (required for S3) |
+| azure_tenant_id | string | null | Azure tenant ID (required for AZURE) |
 | storage_allowed_locations | list(string) | - | List of allowed bucket paths (required) |
 | storage_blocked_locations | list(string) | [] | List of blocked bucket paths |
 | comment | string | null | Description of the storage integration |
-
-### Valid Storage Providers
-
-- S3 (Amazon S3)
-- GCS (Google Cloud Storage)
-- AZURE (Azure Blob Storage)
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | storage_integration_names | Map of storage integration names keyed by identifier |
-| storage_integration_aws_iam_user_arns | Map of AWS IAM user ARNs created by Snowflake |
-| storage_integration_aws_external_ids | Map of AWS external IDs for trust policy configuration |
-| storage_integrations | All storage integration resources |
+| aws_storage_integrations | All AWS storage integration resources (access describe_output for IAM user ARN and external ID) |
+| gcs_storage_integrations | All GCS storage integration resources |
+| azure_storage_integrations | All Azure storage integration resources |
 
 ## AWS IAM Configuration
 
-After creating a storage integration, you need to configure the AWS IAM role trust policy using the outputs:
+After creating a storage integration, access the AWS IAM user ARN and external ID from the `aws_storage_integrations` output:
 
 ```hcl
-# Get the Snowflake IAM user ARN and external ID from outputs
+# Access IAM user ARN and external ID from the resource
 output "snowflake_iam_user_arn" {
-  value = module.storage_integration.storage_integration_aws_iam_user_arns["my_integration"]
+  value = module.storage_integration.aws_storage_integrations["my_integration"].describe_output[0].storage_aws_iam_user_arn[0].value
 }
 
 output "snowflake_external_id" {
-  value = module.storage_integration.storage_integration_aws_external_ids["my_integration"]
+  value = module.storage_integration.aws_storage_integrations["my_integration"].describe_output[0].storage_aws_external_id[0].value
 }
 ```
 
-Update your IAM role trust policy:
+Configure the AWS IAM role trust policy:
 
 ```json
 {
@@ -173,6 +172,7 @@ The module validates inputs and provides descriptive error messages for:
 - Invalid storage provider
 - Empty storage_allowed_locations
 - Invalid AWS IAM role ARN format (when using S3)
+- Missing azure_tenant_id (when using AZURE)
 
 ## Testing
 
@@ -184,43 +184,12 @@ go mod tidy
 go test -v -timeout 30m
 ```
 
-Required environment variables for testing:
-- `SNOWFLAKE_ORGANIZATION_NAME` - Snowflake organization name
-- `SNOWFLAKE_ACCOUNT_NAME` - Snowflake account name
-- `SNOWFLAKE_USER` - Snowflake username
-- `SNOWFLAKE_ROLE` - Snowflake role (e.g., "ACCOUNTADMIN")
-- `SNOWFLAKE_PRIVATE_KEY` - Snowflake private key for key-pair authentication
-
-## CI/CD Configuration
-
-The CI workflow runs on:
-- Push to `main`, `feature/**`, and `bug/**` branches (when `modules/**` changes)
-- Pull requests to `main` (when `modules/**` changes)
-- Manual workflow dispatch
-
-The workflow includes:
-- Terraform validation and format checking
-- Examples validation
-- Terratest integration tests (output displayed in GitHub Step Summary)
-- Changelog generation (non-main branches)
-- Semantic release (main branch only)
-
-The CI workflow uses the following GitHub organization variables:
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `TERRAFORM_VERSION` | Terraform version for CI jobs | `1.3.0` |
-| `GO_VERSION` | Go version for Terratest | `1.21` |
-| `SNOWFLAKE_ORGANIZATION_NAME` | Snowflake organization name | - |
-| `SNOWFLAKE_ACCOUNT_NAME` | Snowflake account name | - |
-| `SNOWFLAKE_USER` | Snowflake username | - |
-| `SNOWFLAKE_ROLE` | Snowflake role (e.g., ACCOUNTADMIN) | - |
-
-The following GitHub secrets are required for Terratest integration tests:
-
-| Secret | Description | Required |
-|--------|-------------|----------|
-| `SNOWFLAKE_PRIVATE_KEY` | Snowflake private key for key-pair authentication | Yes |
+Required environment variables:
+- `SNOWFLAKE_ORGANIZATION_NAME`
+- `SNOWFLAKE_ACCOUNT_NAME`
+- `SNOWFLAKE_USER`
+- `SNOWFLAKE_ROLE`
+- `SNOWFLAKE_PRIVATE_KEY`
 
 ## License
 
