@@ -12,4 +12,5 @@ output "storage_integration_names" {
 output "aws_storage_integrations" {
   description = "All AWS storage integration resources"
   value       = module.storage_integrations.aws_storage_integrations
+  sensitive   = true
 }
