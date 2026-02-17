@@ -1,3 +1,9 @@
+# -----------------------------------------------------------------------------
+# Terraform Snowflake Storage Integration Module - Outputs
+# -----------------------------------------------------------------------------
+# Output values for the Snowflake storage integration module.
+# -----------------------------------------------------------------------------
+
 output "storage_integration_names" {
   description = "The names of the created storage integrations."
   value       = { for k, v in snowflake_storage_integration.this : k => v.name }

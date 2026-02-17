@@ -1,3 +1,9 @@
+# -----------------------------------------------------------------------------
+# Terraform Snowflake Storage Integration Module - Variables
+# -----------------------------------------------------------------------------
+# Input variables for the Snowflake storage integration module.
+# -----------------------------------------------------------------------------
+
 variable "storage_integration_configs" {
   description = "Map of configuration objects for Snowflake storage integrations (external stages)"
   type = map(object({
