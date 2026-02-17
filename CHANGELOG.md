@@ -12,6 +12,7 @@
 - *(storage-integration)* Remove redundant storage_provider attributes
 - *(variables)* Validate azure_tenant_id as non-empty string
 - *(outputs)* Update storage integration outputs to use describe_output
+- *(outputs)* Mark storage integration outputs as sensitive
 
 ### 📚 Documentation
 
@@ -21,6 +22,7 @@
 - Update CHANGELOG.md [skip ci]
 - Update CHANGELOG.md [skip ci]
 - Remove redundant storage integration outputs and update documentation
+- Update CHANGELOG.md [skip ci]
 ## [1.0.0] - 2026-02-07
 
 ### 🐛 Bug Fixes
