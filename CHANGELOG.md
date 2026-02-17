@@ -3,6 +3,11 @@
 ### 🚀 Features
 
 - Restructure to single-module repository layout
+- Restructure to single-module layout and upgrade to Snowflake provider v1.0.0
+
+### 📚 Documentation
+
+- Update CHANGELOG.md [skip ci]
 ## [1.0.0] - 2026-02-07
 
 ### 🐛 Bug Fixes
