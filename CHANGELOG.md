@@ -4,9 +4,16 @@
 
 - Restructure to single-module repository layout
 - Restructure to single-module layout and upgrade to Snowflake provider v1.0.0
+- Migrate to provider-specific storage integration resources
+- *(storage-integration)* Add explicit storage_provider attributes
+
+### 🐛 Bug Fixes
+
+- *(storage-integration)* Remove redundant storage_provider attributes
 
 ### 📚 Documentation
 
+- Update CHANGELOG.md [skip ci]
 - Update CHANGELOG.md [skip ci]
 ## [1.0.0] - 2026-02-07
 
