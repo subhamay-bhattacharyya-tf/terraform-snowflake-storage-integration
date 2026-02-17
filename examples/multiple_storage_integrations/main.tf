@@ -4,7 +4,7 @@
 # to create multiple Snowflake storage integrations using a map of configurations.
 
 module "storage_integrations" {
-  source = "../../modules/snowflake-storage-integration"
+  source = "../.."
 
   storage_integration_configs = var.storage_integration_configs
 }

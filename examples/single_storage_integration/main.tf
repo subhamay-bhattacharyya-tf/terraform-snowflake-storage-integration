@@ -4,7 +4,7 @@
 # to create a single Snowflake storage integration for AWS S3.
 
 module "storage_integration" {
-  source = "../../modules/snowflake-storage-integration"
+  source = "../.."
 
   storage_integration_configs = var.storage_integration_configs
 }
