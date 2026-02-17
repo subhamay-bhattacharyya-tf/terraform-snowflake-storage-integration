@@ -23,6 +23,12 @@
 - Update CHANGELOG.md [skip ci]
 - Remove redundant storage integration outputs and update documentation
 - Update CHANGELOG.md [skip ci]
+- Update CHANGELOG.md [skip ci]
+
+### 🎨 Styling
+
+- *(examples)* Align provider config and enable preview features
+- *(examples)* Align snowflake provider config formatting
 ## [1.0.0] - 2026-02-07
 
 ### 🐛 Bug Fixes
