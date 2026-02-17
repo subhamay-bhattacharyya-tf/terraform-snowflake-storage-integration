@@ -44,7 +44,7 @@ variable "storage_integration_configs" {
   validation {
     condition = alltrue([
       for k, si in var.storage_integration_configs :
-      upper(si.storage_provider) != "AZURE" || (si.azure_tenant_id != null && length(si.azure_tenant_id) > 0)
+      upper(si.storage_provider) != "AZURE" || (si.azure_tenant_id != null && si.azure_tenant_id != "")
     ])
     error_message = "azure_tenant_id is required when storage_provider is AZURE."
   }
