@@ -19,6 +19,8 @@
 - Update CHANGELOG.md [skip ci]
 - Update CHANGELOG.md [skip ci]
 - Update CHANGELOG.md [skip ci]
+- Update CHANGELOG.md [skip ci]
+- Remove redundant storage integration outputs and update documentation
 ## [1.0.0] - 2026-02-07
 
 ### 🐛 Bug Fixes
