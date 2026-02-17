@@ -7,15 +7,15 @@ A Terraform module for creating and managing Snowflake storage integrations usin
 ## Features
 
 - Map-based configuration for creating single or multiple storage integrations
+- Provider-specific resources for AWS S3, GCS, and Azure
 - Built-in input validation with descriptive error messages
 - Sensible defaults for optional properties
 - Outputs keyed by integration identifier for easy reference
-- Support for AWS S3, GCS, and Azure storage providers
 - Configurable allowed and blocked storage locations
 
 ## Usage
 
-### Single Storage Integration
+### Single Storage Integration (AWS S3)
 
 ```hcl
 module "storage_integration" {
@@ -62,10 +62,29 @@ module "storage_integrations" {
 }
 ```
 
+### Azure Storage Integration
+
+```hcl
+module "azure_storage_integration" {
+  source = "github.com/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration"
+
+  storage_integration_configs = {
+    "azure_integration" = {
+      name                      = "MY_AZURE_INTEGRATION"
+      enabled                   = true
+      storage_provider          = "AZURE"
+      azure_tenant_id           = "your-azure-tenant-id"
+      storage_allowed_locations = ["azure://myaccount.blob.core.windows.net/mycontainer/"]
+      comment                   = "Azure Blob storage integration"
+    }
+  }
+}
+```
+
 ## Examples
 
-- [Single Storage Integration](examples/single_storage_integration) - Create a single storage integration
-- [Multiple Storage Integrations](examples/multiple_storage_integrations) - Create multiple storage integrations
+- [Single Storage Integration](examples/single_storage_integration) - Create a single AWS S3 storage integration
+- [Multiple Storage Integrations](examples/multiple_storage_integrations) - Create multiple AWS S3 storage integrations
 
 ## Requirements
 
@@ -94,6 +113,7 @@ module "storage_integrations" {
 | enabled | bool | true | Whether the integration is enabled |
 | storage_provider | string | "S3" | Cloud storage provider (S3, GCS, AZURE) |
 | storage_aws_role_arn | string | null | AWS IAM role ARN for S3 access (required for S3) |
+| azure_tenant_id | string | null | Azure tenant ID (required for AZURE) |
 | storage_allowed_locations | list(string) | - | List of allowed bucket paths (required) |
 | storage_blocked_locations | list(string) | [] | List of blocked bucket paths |
 | comment | string | null | Description of the storage integration |
@@ -103,9 +123,14 @@ module "storage_integrations" {
 | Name | Description |
 |------|-------------|
 | storage_integration_names | Map of storage integration names keyed by identifier |
-| storage_integration_aws_iam_user_arns | Map of AWS IAM user ARNs created by Snowflake |
-| storage_integration_aws_external_ids | Map of AWS external IDs for trust policy configuration |
-| storage_integrations | All storage integration resources |
+| storage_integration_aws_iam_user_arns | Map of AWS IAM user ARNs created by Snowflake (AWS only) |
+| storage_integration_aws_external_ids | Map of AWS external IDs for trust policy configuration (AWS only) |
+| storage_integration_gcs_service_accounts | Map of GCS service accounts (GCS only) |
+| storage_integration_azure_consent_urls | Map of Azure consent URLs (Azure only) |
+| storage_integration_azure_app_ids | Map of Azure multi-tenant app IDs (Azure only) |
+| aws_storage_integrations | All AWS storage integration resources |
+| gcs_storage_integrations | All GCS storage integration resources |
+| azure_storage_integrations | All Azure storage integration resources |
 
 ## AWS IAM Configuration
 
@@ -139,6 +164,7 @@ The module validates inputs and provides descriptive error messages for:
 - Invalid storage provider
 - Empty storage_allowed_locations
 - Invalid AWS IAM role ARN format (when using S3)
+- Missing azure_tenant_id (when using AZURE)
 
 ## Testing
 

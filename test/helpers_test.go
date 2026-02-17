@@ -1,4 +1,9 @@
-// File: test/helpers_test.go
+// -----------------------------------------------------------------------------
+// Terraform Snowflake Storage Integration Module - Test Helpers
+// -----------------------------------------------------------------------------
+// Helper functions for Terratest integration tests.
+// -----------------------------------------------------------------------------
+
 package test
 
 import (

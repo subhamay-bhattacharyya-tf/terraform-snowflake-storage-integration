@@ -1,4 +1,9 @@
-// File: test/single_storage_integration_test.go
+// -----------------------------------------------------------------------------
+// Terraform Snowflake Storage Integration Module - Single Integration Test
+// -----------------------------------------------------------------------------
+// Tests creating a single storage integration via the module.
+// -----------------------------------------------------------------------------
+
 package test
 
 import (

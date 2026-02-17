@@ -19,7 +19,7 @@ output "storage_integration_aws_external_ids" {
   value       = module.storage_integration.storage_integration_aws_external_ids
 }
 
-output "storage_integrations" {
-  description = "All storage integration resources"
-  value       = module.storage_integration.storage_integrations
+output "aws_storage_integrations" {
+  description = "All AWS storage integration resources"
+  value       = module.storage_integration.aws_storage_integrations
 }
