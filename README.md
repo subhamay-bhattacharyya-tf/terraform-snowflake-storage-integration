@@ -8,6 +8,7 @@ A Terraform module for creating and managing Snowflake storage integrations usin
 
 - Map-based configuration for creating single or multiple storage integrations
 - Provider-specific resources for AWS S3, GCS, and Azure
+- Built-in role-based access grants configuration
 - Built-in input validation with descriptive error messages
 - Sensible defaults for optional properties
 - Outputs keyed by integration identifier for easy reference
@@ -35,6 +36,35 @@ module "storage_integration" {
 }
 ```
 
+### Storage Integration with Grants
+
+```hcl
+module "storage_integration" {
+  source = "github.com/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration"
+
+  storage_integration_configs = {
+    "my_integration" = {
+      name                      = "MY_S3_INTEGRATION"
+      enabled                   = true
+      storage_provider          = "S3"
+      storage_aws_role_arn      = "arn:aws:iam::123456789012:role/snowflake-role"
+      storage_allowed_locations = ["s3://my-bucket/data/"]
+      comment                   = "My S3 storage integration"
+      grants = [
+        {
+          role_name  = "DATA_ENGINEER"
+          privileges = ["USAGE"]
+        },
+        {
+          role_name  = "DATA_ANALYST"
+          privileges = ["USAGE"]
+        }
+      ]
+    }
+  }
+}
+```
+
 ### Multiple Storage Integrations
 
 ```hcl
@@ -49,6 +79,12 @@ module "storage_integrations" {
       storage_aws_role_arn      = "arn:aws:iam::123456789012:role/snowflake-raw-role"
       storage_allowed_locations = ["s3://my-bucket/raw/"]
       comment                   = "Storage integration for raw data ingestion"
+      grants = [
+        {
+          role_name  = "DATA_ENGINEER"
+          privileges = ["USAGE"]
+        }
+      ]
     }
     "processed_data_integration" = {
       name                      = "SN_PROCESSED_DATA_INTEGRATION"
@@ -76,6 +112,12 @@ module "azure_storage_integration" {
       azure_tenant_id           = "your-azure-tenant-id"
       storage_allowed_locations = ["azure://myaccount.blob.core.windows.net/mycontainer/"]
       comment                   = "Azure Blob storage integration"
+      grants = [
+        {
+          role_name  = "DATA_ENGINEER"
+          privileges = ["USAGE"]
+        }
+      ]
     }
   }
 }
@@ -117,13 +159,21 @@ module "azure_storage_integration" {
 | storage_allowed_locations | list(string) | - | List of allowed bucket paths (required) |
 | storage_blocked_locations | list(string) | [] | List of blocked bucket paths |
 | comment | string | null | Description of the storage integration |
+| grants | list(object) | [] | List of role grants for the storage integration |
+
+### grants Object Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| role_name | string | Name of the Snowflake role to grant privileges to |
+| privileges | list(string) | List of privileges to grant (e.g., ["USAGE"]) |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | storage_integration_names | Map of storage integration names keyed by identifier |
-| aws_storage_integrations | All AWS storage integration resources (access describe_output for IAM user ARN and external ID) |
+| aws_storage_integrations | All AWS storage integration resources |
 | gcs_storage_integrations | All GCS storage integration resources |
 | azure_storage_integrations | All Azure storage integration resources |
 
@@ -132,7 +182,6 @@ module "azure_storage_integration" {
 After creating a storage integration, access the AWS IAM user ARN and external ID from the `aws_storage_integrations` output:
 
 ```hcl
-# Access IAM user ARN and external ID from the resource
 output "snowflake_iam_user_arn" {
   value = module.storage_integration.aws_storage_integrations["my_integration"].describe_output[0].storage_aws_iam_user_arn[0].value
 }

@@ -58,3 +58,33 @@ resource "snowflake_storage_integration_azure" "this" {
   storage_blocked_locations = each.value.storage_blocked_locations
   comment                   = each.value.comment
 }
+
+# Grant privileges on storage integrations to account roles
+resource "snowflake_grant_privileges_to_account_role" "storage_integration_grants" {
+  for_each = {
+    for grant in flatten([
+      for si_key, si in var.storage_integration_configs : [
+        for g in si.grants : {
+          key        = "${si_key}_${g.role_name}"
+          role_name  = g.role_name
+          privileges = g.privileges
+          name       = si.name
+        }
+      ]
+    ]) : grant.key => grant
+  }
+
+  account_role_name = each.value.role_name
+  privileges        = each.value.privileges
+
+  on_account_object {
+    object_type = "INTEGRATION"
+    object_name = each.value.name
+  }
+
+  depends_on = [
+    snowflake_storage_integration_aws.this,
+    snowflake_storage_integration_gcs.this,
+    snowflake_storage_integration_azure.this
+  ]
+}
