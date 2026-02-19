@@ -15,6 +15,10 @@ variable "storage_integration_configs" {
     storage_allowed_locations = list(string)
     storage_blocked_locations = optional(list(string), [])
     comment                   = optional(string, null)
+    grants = optional(list(object({
+      role_name  = string
+      privileges = list(string)
+    })), [])
   }))
   default = {}
 
