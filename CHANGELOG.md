@@ -1,3 +1,13 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [1.2.0](https://github.com/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration/compare/v1.1.0...v1.2.0) (2026-02-19)
+
+### Features
+
+* add role-based grants configuration for storage integrations ([29a80f7](https://github.com/subhamay-bhattacharyya-tf/terraform-snowflake-storage-integration/commit/29a80f7efbea504a11325d1eba6eeda2030024b2))
+
 ## [unreleased]
 
 ### 🚀 Features
